@@ -1,0 +1,86 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="UTF-8"/>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <meta name="NodeRed: MQTT" content="Ejemplo con WS y MQTT"/>
+        <meta name="keywords" content="Node, Red, MQTT, RaspberryPi"/>
+        <title>Ejemplo Node Red</title>
+        <script>
+            var topico1;
+			var topico2;
+			function ConectarWS() {
+				topico1 = new WebSocket("ws://192.168.1.106:1880/ws/topico1");
+				topico2 = new WebSocket("ws://192.168.1.106:1880/ws/topico2");
+			    topico1.onmessage = function(msg) {
+					var cargar_dato1 = "";
+					var datos = msg.data;
+					cargar_dato1 += "<h2>"+datos+"</h2>";
+					document.getElementById('MQTT1').innerHTML = cargar_dato1;
+				}
+				topico2.onmessage = function(msg) {
+					var cargar_dato2 = "";
+					var datos2 = msg.data;
+					cargar_dato2 += "<h2>"+datos2+"</h2>";
+					document.getElementById('MQTT2').innerHTML = cargar_dato2;
+				}
+				topico1.onopen = function() {
+                document.getElementById('estado').innerHTML = "Websocket: Conectado";
+				}
+				topico1.onclose = function() {
+                document.getElementById('estado').innerHTML = "Websocket: Desconectado";
+                setTimeout(ConectarWS,5000);
+				}
+			}
+        </script>
+    </head>
+    <body onload="ConectarWS();" onunload="ws.close();">
+        <h1>Ejemplo actualización de web al enviar mensajes MQTT</h1>
+        <hr/>
+        <div class="dashboard-ejemplo">
+            <div id='T' class='panel'>
+                <h2>Tópico MQTT 1</h2>
+                <br>
+                <div id='MQTT1' class='Dato_1'>Esperando Lectura</div>
+            </div>
+            <div id='H' class='panel'>
+                <h2>Tópico MQTT 2</h2>
+                <br>
+                <div id='MQTT2' class='Dato_2'>Esperando Lectura</div>
+            </div>
+        </div>
+		<hr/>
+		<div id="estado">Websocket: Desconectado</div>
+		<style>
+		    body {
+ 	            text-align: center;
+                background-color: #9AE0E7;
+            }
+            h2 {
+ 	            margin: 0px;
+            }
+			.dashboard-ejemplo {
+				margin: auto;
+				max-width: 620px;
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				grid-column-gap: 20px;
+				grid-row-gap: 20px;
+			}
+			.dashboard-ejemplo .panel {
+				text-align: left;
+				background-color: #ddf;
+				border: 3px solid #000000;
+				padding: 20px;
+			}
+			.dashboard-ejemplo .Dato_1 {
+			    text-align: center;
+			    color: #0011ff;
+			}
+			.dashboard-ejemplo .Dato_2 {
+			    text-align: center;
+			    color: #0011ff;
+			}
+		</style>
+    </body>
+</html>
